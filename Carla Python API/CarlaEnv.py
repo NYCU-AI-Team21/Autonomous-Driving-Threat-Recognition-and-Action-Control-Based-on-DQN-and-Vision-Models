@@ -24,12 +24,23 @@ class CarlaEnv:
         self.collision_happened = False  # 碰撞旗標  新增的
 
     def spawn_vehicle(self):
-        vehicle_bp = self.blueprint_library.filter('model3')[0]
-        spawn_point = random.choice(self.world.get_map().get_spawn_points())
-        self.vehicle = self.world.spawn_actor(vehicle_bp, spawn_point)
-        self.actor_list.append(self.vehicle)
-        self.control = CarlaControl(self.vehicle)
-        self._attach_collision_sensor()  # 裝上碰撞感測器
+        vehicle_bp = self.blueprint_library.filter('vehicle.nissan.patrol')[0]
+        spawn_points = self.world.get_map().get_spawn_points()
+
+        for attempt in range(len(spawn_points)):
+            spawn_point = random.choice(spawn_points)
+            try:
+                self.vehicle = self.world.spawn_actor(vehicle_bp, spawn_point)
+                self.actor_list.append(self.vehicle)
+                self.control = CarlaControl(self.vehicle)
+                self._attach_collision_sensor()  # 裝上碰撞感測器
+                print(f"Spawned vehicle at {spawn_point.location}")
+                return  # spawn 成功就離開函式
+            except RuntimeError:
+                print(f"Spawn failed at {spawn_point.location}, retrying...")
+
+        # 如果嘗試所有點都失敗，拋錯
+        raise RuntimeError("Spawn vehicle failed: no free spawn points available.")
 #--------------------------------------------------------------------------碰撞偵測(不確定行不行) begin
     def _attach_collision_sensor(self):
         collision_bp = self.blueprint_library.find('sensor.other.collision')
@@ -54,7 +65,11 @@ class CarlaEnv:
             carla.Location(x=1.5, y=0.0, z=2.4),
             carla.Rotation(pitch=0.0, yaw=0.0, roll=0.0)
         )
+<<<<<<< HEAD
         SHOW_IMG = True # 輸出及時影像
+=======
+        SHOW_IMG = False # 輸出及時影像
+>>>>>>> b3209a37837cd4c74d1144f1e7b4158b80f97a47
         self.camera = self.world.spawn_actor(camera_bp, cam_transform, attach_to=self.vehicle)
         self.actor_list.append(self.camera)
         self.camera.listen(lambda data: process_img(data, SHOW_IMG))
@@ -71,7 +86,13 @@ class CarlaEnv:
         self.spawn_vehicle()
 
 
+<<<<<<< HEAD
     def step(self, action, detections, traffic_light_state):
+=======
+
+
+    def step(self, action,detections,traffic_light_state):
+>>>>>>> b3209a37837cd4c74d1144f1e7b4158b80f97a47
         self.control.apply_action(action)
         time.sleep(0.1)
 
@@ -98,34 +119,28 @@ class CarlaEnv:
         traffic_light_state = self.vehicle.get_traffic_light_state()
         if traffic_light_state == carla.TrafficLightState.Red:
             reward -= 1.0
-            done = True
+        #    done = True
 
         vehicle_count = 0
         off_road = False
         front_distance = None
 
-        for box in detections[0].boxes:
-            cls = int(box.cls[0])
-            class_name = detections[0].names[cls]
+        for _, box in detections.iterrows():
+            class_name = box['name']
+            y_bottom = box['ymax']  # DataFrame 用 ymax 代表框的底部y座標
+            x_center = (box['xmin'] + box['xmax']) / 2
 
-            # 用bounding box的底部y座標（右下角的y）
-            y_bottom = box.xyxy[0][3].item()  
-
-            if class_name == 'car' or class_name == 'truck' or class_name == 'bus' or  class_name == 'pedestrian':
+            if class_name in ['car', 'truck', 'bus', 'pedestrian']:
                 vehicle_count += 1
-                # 判斷是否在前方視野
-                x_center = (box.xyxy[0][0].item() + box.xyxy[0][2].item()) / 2
-                if 240 < x_center < 400:  
-                    # y_bottom越大表示越近鏡頭底部 => 距離越近
-                    dist = 480 - y_bottom  # 假設影像高是480，距離大概反比於 y_bottom
+                if 240 < x_center < 400:
+                    dist = 480 - y_bottom
                     if (front_distance is None) or (dist < front_distance):
                         front_distance = dist
             elif class_name == 'offroad':
                 off_road = True
-
-        if front_distance is not None:
-            if front_distance < 50:  
-                reward -= 0.5
+                if front_distance is not None:
+                    if front_distance < 50:  
+                        reward -= 0.5
 
 
         # 多維 state 回傳
@@ -146,7 +161,7 @@ class CarlaEnv:
 
     def cleanup(self):
         for actor in self.actor_list:
-            if actor is not None:
+            if actor is not None and actor.is_alive:
                 actor.destroy()
         self.actor_list = []
         print("CARLA Cleaned Up")

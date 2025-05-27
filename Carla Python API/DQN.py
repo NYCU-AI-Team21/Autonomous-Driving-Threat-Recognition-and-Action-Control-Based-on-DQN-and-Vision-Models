@@ -4,6 +4,7 @@ from DModel import DQN
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 class DQNAgent:
     def __init__(self, state_size, action_size, lr=1e-3):
         self.action_size = action_size
@@ -15,7 +16,9 @@ class DQNAgent:
         state = torch.FloatTensor(state).unsqueeze(0).to(device)
         with torch.no_grad():
             q_values = self.model(state)
-        return q_values.argmax().item()
+        action_index = q_values.argmax().item()
+        return action_index  # 回傳整數
+
     
     def train_step(self, state, action, reward, next_state, done, gamma=0.99):
         state = torch.FloatTensor(state).unsqueeze(0).to(device)
