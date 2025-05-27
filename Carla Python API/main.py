@@ -34,3 +34,6 @@ def main():
             # controller.apply_action(action)
     finally:
         env.cleanup()
+
+if __name__ == "__main__":
+    main()
