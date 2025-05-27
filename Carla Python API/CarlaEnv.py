@@ -54,9 +54,10 @@ class CarlaEnv:
             carla.Location(x=1.5, y=0.0, z=2.4),
             carla.Rotation(pitch=0.0, yaw=0.0, roll=0.0)
         )
+        SHOW_IMG = True # 輸出及時影像
         self.camera = self.world.spawn_actor(camera_bp, cam_transform, attach_to=self.vehicle)
         self.actor_list.append(self.camera)
-        self.camera.listen(lambda data: process_img(data))
+        self.camera.listen(lambda data: process_img(data, SHOW_IMG))
 #------------------------------------------------------------------------------------新增的 begin
     def get_speed(self):
         """取得目前車速，單位 km/h"""
