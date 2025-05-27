@@ -65,11 +65,7 @@ class CarlaEnv:
             carla.Location(x=1.5, y=0.0, z=2.4),
             carla.Rotation(pitch=0.0, yaw=0.0, roll=0.0)
         )
-<<<<<<< HEAD
-        SHOW_IMG = True # 輸出及時影像
-=======
         SHOW_IMG = False # 輸出及時影像
->>>>>>> b3209a37837cd4c74d1144f1e7b4158b80f97a47
         self.camera = self.world.spawn_actor(camera_bp, cam_transform, attach_to=self.vehicle)
         self.actor_list.append(self.camera)
         self.camera.listen(lambda data: process_img(data, SHOW_IMG))
@@ -85,14 +81,7 @@ class CarlaEnv:
         time.sleep(1.0)
         self.spawn_vehicle()
 
-
-<<<<<<< HEAD
     def step(self, action, detections, traffic_light_state):
-=======
-
-
-    def step(self, action,detections,traffic_light_state):
->>>>>>> b3209a37837cd4c74d1144f1e7b4158b80f97a47
         self.control.apply_action(action)
         time.sleep(0.1)
 
