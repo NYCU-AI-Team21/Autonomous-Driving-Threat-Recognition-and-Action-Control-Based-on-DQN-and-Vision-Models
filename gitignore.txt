@@ -1,2 +1,6 @@
 *.csv
-.vscode/*
+.vscode/
+.pyc
+.__pycachee__/
+.pth
+*
