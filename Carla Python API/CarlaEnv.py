@@ -71,7 +71,7 @@ class CarlaEnv:
         self.spawn_vehicle()
 
 
-    def step(self, action,detections,traffic_light_state):
+    def step(self, action, detections, traffic_light_state):
         self.control.apply_action(action)
         time.sleep(0.1)
 
