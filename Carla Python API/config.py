@@ -20,7 +20,7 @@ CONFIG = {
     'reward_forward': 1,
     'reward_brake': -0.5,
 
-    'max_speed': 50,       # km/h
-    'min_speed': 5,        # km/h
+    'max_speed': 60,       # km/h
+    'min_speed': 30,        # km/h
     'safe_distance': 10.0, # meters
 }

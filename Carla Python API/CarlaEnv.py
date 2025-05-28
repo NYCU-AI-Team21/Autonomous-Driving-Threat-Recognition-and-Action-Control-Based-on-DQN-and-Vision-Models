@@ -82,7 +82,7 @@ class CarlaEnv:
         time.sleep(1.0)
         self.spawn_vehicle()
 
-    def step(self, action, detections, traffic_light_state):
+    def step(self, action, detections):
         self.control.apply_action(action)
         time.sleep(0.1)
 
@@ -93,7 +93,7 @@ class CarlaEnv:
         done = False
 
         if self.collision_happened:
-            reward -= 2.0
+            reward -= 10.0
             done = True
             self.collision_happened = False  # 碰撞判定一次後清除，避免持續判定
 
@@ -101,18 +101,26 @@ class CarlaEnv:
         if CONFIG["min_speed"] <= speed <= CONFIG["max_speed"]:
             reward += 0.5
         elif speed > 50:
-            reward -= 0.5
+            reward -= 0.2
         else:
-            reward -= 0.5
+            reward -= 0.2
 
         # 交通燈判定
         traffic_light_state = self.vehicle.get_traffic_light_state()
-        if traffic_light_state == carla.TrafficLightState.Red:
-            reward -= 1.0
-        #    done = True
+        if traffic_light_state == carla.TrafficLightState.Red and speed > 0.1:
+            reward -= 10.0
+            done = True
+
+        vehicle_location = self.vehicle.get_location()
+        waypoint = self.world.get_map().get_waypoint(vehicle_location, project_to_road=False)
+        if waypoint.lane_type == carla.LaneType.Driving:
+            reward += 0.2  #在正規車道
+        else:
+            reward -= 0.2  #在非非正規車道
+
+        
 
         vehicle_count = 0
-        off_road = False
         front_distance = None
 
         for _, box in detections.iterrows():
@@ -126,18 +134,15 @@ class CarlaEnv:
                     dist = 480 - y_bottom
                     if (front_distance is None) or (dist < front_distance):
                         front_distance = dist
-            elif class_name == 'offroad':
-                off_road = True
-                if front_distance is not None:
-                    if front_distance < 50:  
-                        reward -= 0.5
+            if front_distance is not None:
+                if front_distance < CONFIG["safe_distance"]:  
+                    reward -= 0.5
 
 
         # 多維 state 回傳
         next_state = [
             speed,
             vehicle_count,
-            1 if off_road else 0,
             front_distance if front_distance is not None else -1
         ]
 

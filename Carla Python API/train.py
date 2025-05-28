@@ -14,7 +14,7 @@ from Control import CarlaControl
 from YOLO import YOLODetector
 from CamManager import CamManager
 
-state_size = 4
+state_size = 3
 action_size = 4
 
 ACTIONS = [
@@ -32,7 +32,7 @@ memory = deque(maxlen=CONFIG['memory_size'])
 
 for episode in tqdm(range(CONFIG['max_episode'])):
     # 初始化 state 多維，依你 step() 回傳格式調整
-    state = [0.0, 0, 0, -1]  
+    state = [0.0, 0, -1]  
     total_reward = 0
     cam_manager = CamManager() # added
     env.cleanup()
@@ -56,12 +56,8 @@ for episode in tqdm(range(CONFIG['max_episode'])):
         # print("8")
         detections = detector.detect(frame)
         # print("4")
-        # 判斷交通燈 (如果你還想在 step() 判斷，也可以改傳進 step)
-        traffic_light_state = "Green"
-        if env.vehicle.get_traffic_light_state() == carla.TrafficLightState.Red:
-            traffic_light_state = "Red"
 
-        next_state, reward, done, _ = env.step(action, detections, traffic_light_state)
+        next_state, reward, done, _ = env.step(action, detections)
 
         memory.append((state, action_index, reward, next_state, done))
         state = next_state
