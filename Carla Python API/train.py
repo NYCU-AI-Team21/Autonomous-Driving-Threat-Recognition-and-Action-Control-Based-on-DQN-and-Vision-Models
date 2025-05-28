@@ -14,7 +14,7 @@ from Control import CarlaControl
 from YOLO import YOLODetector
 from CamManager import CamManager
 
-state_size = 3
+state_size = 5
 action_size = 4
 
 ACTIONS = [
@@ -32,7 +32,7 @@ memory = deque(maxlen=CONFIG['memory_size'])
 
 for episode in tqdm(range(CONFIG['max_episode'])):
     # 初始化 state 多維，依你 step() 回傳格式調整
-    state = [0.0, 0, -1]  
+    state = [0.0, 0, 0, 0, 100.0] 
     total_reward = 0
     cam_manager = CamManager() # added
     env.cleanup()

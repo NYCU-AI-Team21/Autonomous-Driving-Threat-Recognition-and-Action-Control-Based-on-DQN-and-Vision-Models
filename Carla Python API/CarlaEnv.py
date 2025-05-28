@@ -113,13 +113,16 @@ class CarlaEnv:
         if traffic_light_state == carla.TrafficLightState.Red and speed == 0.0:
             reward += 0.5
         
+        off_road = None
 
         vehicle_location = self.vehicle.get_location()
         waypoint = self.world.get_map().get_waypoint(vehicle_location, project_to_road=False)
-        if waypoint.lane_type == carla.LaneType.Driving:
+        if waypoint is not None and waypoint.lane_type == carla.LaneType.Driving:
             reward += 0.2  #在正規車道
+            off_road = True
         else:
             reward -= 0.2  #在非非正規車道
+            off_road = False
 
         
 
@@ -146,7 +149,9 @@ class CarlaEnv:
         next_state = [
             speed,
             vehicle_count,
-            front_distance if front_distance is not None else -1
+            1 if off_road else 0,
+            1 if traffic_light_state == carla.TrafficLightState.Red else 0,
+            front_distance if front_distance is not None else 100.0
         ]
 
         return next_state, reward, done, {}
