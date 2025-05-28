@@ -110,6 +110,9 @@ class CarlaEnv:
         if traffic_light_state == carla.TrafficLightState.Red and speed > 0.1:
             reward -= 10.0
             done = True
+        if traffic_light_state == carla.TrafficLightState.Red and speed == 0.0:
+            reward += 0.5
+        
 
         vehicle_location = self.vehicle.get_location()
         waypoint = self.world.get_map().get_waypoint(vehicle_location, project_to_road=False)
