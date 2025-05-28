@@ -4,4 +4,5 @@
 .__pycachee__/
 .pth
 .venv
+.env
 *
