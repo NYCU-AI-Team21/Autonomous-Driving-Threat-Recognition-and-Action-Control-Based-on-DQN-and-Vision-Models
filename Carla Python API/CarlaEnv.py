@@ -61,6 +61,7 @@ class CarlaEnv:
         camera_bp.set_attribute("image_size_x", "640")
         camera_bp.set_attribute("image_size_y", "480")
         camera_bp.set_attribute("fov", "100")
+        camera_bp.set_attribute("sensor_tick", str(1.0 / 10)) # set to 10 fps for now
         cam_transform = carla.Transform(
             carla.Location(x=1.5, y=0.0, z=2.4),
             carla.Rotation(pitch=0.0, yaw=0.0, roll=0.0)
@@ -153,6 +154,11 @@ class CarlaEnv:
             if actor is not None and actor.is_alive:
                 actor.destroy()
         self.actor_list = []
+        self.vehicle = None
+        self.camera = None
+        self.control = None
+        self.collision_sensor = None
+        self.collision_happened = False
         print("CARLA Cleaned Up")
 
 
