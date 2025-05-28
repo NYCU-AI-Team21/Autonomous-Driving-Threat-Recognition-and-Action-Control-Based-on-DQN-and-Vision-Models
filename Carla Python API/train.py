@@ -6,7 +6,10 @@ import random
 import numpy as np
 from collections import deque
 import cv2
+import matplotlib.pyplot as plt
+import os
 
+import plot
 from config import CONFIG
 from CarlaEnv import CarlaEnv
 from DQN import DQNAgent
@@ -29,6 +32,9 @@ detector = YOLODetector()
 env = CarlaEnv()
 
 memory = deque(maxlen=CONFIG['memory_size'])
+episode_rewards = []
+episode_steps = []
+
 
 for episode in tqdm(range(CONFIG['max_episode'])):
     # 初始化 state 多維，依你 step() 回傳格式調整
@@ -72,9 +78,12 @@ for episode in tqdm(range(CONFIG['max_episode'])):
             # print("2")
             break
     # print("3")
+    episode_rewards.append(total_reward)
+    episode_steps.append(step+1)
     print(f"Episode {episode} ended at step {step} with reward {total_reward}", flush=True)
     if episode % CONFIG['target_update'] == 0:
         torch.save(agent.model.state_dict(), f"./model/dqn_ep{episode}.pth")
     #cv2.destroyAllWindows()
 
 env.close()
+plot.save_training_curves(episode_rewards, episode_steps)
