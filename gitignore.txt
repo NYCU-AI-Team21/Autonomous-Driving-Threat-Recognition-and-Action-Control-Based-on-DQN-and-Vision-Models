@@ -1,7 +1,7 @@
 *.csv
 .vscode/
 .pyc
-.__pycachee__/
+.__pycache__/
 .pth
 .venv
 .env
