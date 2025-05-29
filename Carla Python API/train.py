@@ -21,11 +21,11 @@ state_size = 5
 action_size = 5
 
 ACTIONS = [
-    { 1, 0.0, 0.0, False},  # 直行加速
-    { 0.0, 0.0, 0.5, False},  # 直行減速
-    { 0.5, -1.0, 0.0, False},  # 左滿舵
-    { 0.5, 1.0, 0.0, False},  # 右滿舵
-    { 1, 0.0, 0.0, True},   # 倒車
+    (1, 0.0, 0.0, False),  # 直行加速
+    (0.0, 0.0, 0.5, False),  # 直行減速
+    (0.5, -1.0, 0.0, False),  # 左滿舵
+    (0.5, 1.0, 0.0, False),  # 右滿舵
+    (1, 0.0, 0.0, True),   # 倒車
 ]
 
 agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'], CONFIG['target_update_freq'])
