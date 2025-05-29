@@ -4,7 +4,6 @@ from DModel import DQN
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
 class DQNAgent:
     def __init__(self, state_size, action_size, lr=1e-3):
         self.action_size = action_size
@@ -43,3 +42,7 @@ class DQNAgent:
         self.optimizer.step()
 
         return loss.item()
+
+    def load(self, path):
+        self.model.load_state_dict(torch.load(path, map_location=device))
+        self.model.eval()
