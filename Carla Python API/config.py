@@ -29,4 +29,5 @@ CONFIG = {
     'max_speed': 60,       # km/h
     'min_speed': 30,        # km/h
     'safe_distance': 10.0, # meters
+    'dest_arrival_threshold':5 # meters
 }

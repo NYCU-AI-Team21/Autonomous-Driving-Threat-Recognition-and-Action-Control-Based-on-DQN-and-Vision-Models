@@ -28,7 +28,7 @@ def main():
     env = CarlaEnv()
     cam_manager = CamManager()
     detector = YOLODetector()
-    agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'])
+    agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'], CONFIG['target_update_freq'])
     agent.load("./model/dqn_ep490.pth") # modify this for other paths
     
     try:

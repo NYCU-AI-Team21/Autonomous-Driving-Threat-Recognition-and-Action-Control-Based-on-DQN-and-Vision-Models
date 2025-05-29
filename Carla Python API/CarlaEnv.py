@@ -22,6 +22,11 @@ class CarlaEnv:
         self.control = None  # 新增的
         self.collision_sensor = None # 新增的
         self.collision_happened = False  # 碰撞旗標  新增的
+        #新增目的地
+        self.map = self.world.get_map()
+        self.destination = random.choice(self.map.generate_waypoints(2.0)).transform.location
+
+        
 
     def spawn_vehicle(self):
         vehicle_bp = self.blueprint_library.filter('vehicle.nissan.patrol')[0]
@@ -35,6 +40,7 @@ class CarlaEnv:
                 self.control = CarlaControl(self.vehicle)
                 self._attach_collision_sensor()  # 裝上碰撞感測器
                 print(f"Spawned vehicle at {spawn_point.location}")
+                self.destination = random.choice(self.map.generate_waypoints(2.0)).transform.location
                 return  # spawn 成功就離開函式
             except RuntimeError:
                 print(f"Spawn failed at {spawn_point.location}, retrying...")
@@ -83,6 +89,7 @@ class CarlaEnv:
         self.spawn_vehicle()
 
     def step(self, action, detections):
+        before_dis = dest_distance = vehicle_location.distance(self.destination)
         self.control.apply_action(action)
         time.sleep(0.1)
 
@@ -93,7 +100,7 @@ class CarlaEnv:
         done = False
 
         if self.collision_happened:
-            reward -= 10.0
+            reward -= 20.0
             done = True
             self.collision_happened = False  # 碰撞判定一次後清除，避免持續判定
 
@@ -101,17 +108,17 @@ class CarlaEnv:
         if CONFIG["min_speed"] <= speed <= CONFIG["max_speed"]:
             reward += 0.5
         elif speed > 50:
-            reward -= 0.2
+            reward -= 0.3
         else:
-            reward -= 0.2
+            reward -= 0.3
 
         # 交通燈判定
         traffic_light_state = self.vehicle.get_traffic_light_state()
         if traffic_light_state == carla.TrafficLightState.Red and speed > 0.1:
-            reward -= 10.0
+            reward -= 15.0
             done = True
         if traffic_light_state == carla.TrafficLightState.Red and speed == 0.0:
-            reward += 0.5
+            reward += 1.0
         
         off_road = None
 
@@ -128,7 +135,7 @@ class CarlaEnv:
 
         vehicle_count = 0
         front_distance = None
-
+    
         for _, box in detections.iterrows():
             class_name = box['name']
             y_bottom = box['ymax']  # DataFrame 用 ymax 代表框的底部y座標
@@ -144,6 +151,17 @@ class CarlaEnv:
                 if front_distance < CONFIG["safe_distance"]:  
                     reward -= 0.5
 
+        #計算目的地距離
+        dest_distance = vehicle_location.distance(self.destination)
+        if dest_distance< before_dis:
+            reward += 1
+        else:
+            reward -=1
+        #如果接近目的地
+        if dest_distance < CONFIG["dest_arrival_threshold"]:  # 你可以在 config 裡定義 5.0 (單位公尺)
+            reward += 30.0
+            done = True
+
 
         # 多維 state 回傳
         next_state = [
@@ -155,6 +173,7 @@ class CarlaEnv:
         ]
 
         return next_state, reward, done, {}
+
     
     
     def close(self):
