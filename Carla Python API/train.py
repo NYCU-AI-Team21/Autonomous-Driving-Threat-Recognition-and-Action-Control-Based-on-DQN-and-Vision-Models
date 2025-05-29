@@ -27,14 +27,15 @@ ACTIONS = [
         [0.0, 0.0, 1.0]    # brake
     ]
 
-agent = DQNAgent(state_size, action_size)
+agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'])
 detector = YOLODetector()
 env = CarlaEnv()
 
 memory = deque(maxlen=CONFIG['memory_size'])
 episode_rewards = []
 episode_steps = []
-
+losses = [] 
+best_reward = -float('inf')
 
 for episode in tqdm(range(CONFIG['max_episode'])):
     # 初始化 state 多維，依你 step() 回傳格式調整
@@ -72,7 +73,8 @@ for episode in tqdm(range(CONFIG['max_episode'])):
         if len(memory) >= CONFIG['batch_size']:
             batch = random.sample(memory, CONFIG['batch_size'])
             for b in batch:
-                agent.train_step(*b, gamma=CONFIG['gamma'])
+                loss = agent.train_step(*b, gamma=CONFIG['gamma'])
+                losses.append(loss)
 
         if done:
             # print("2")
@@ -83,6 +85,11 @@ for episode in tqdm(range(CONFIG['max_episode'])):
     print(f"Episode {episode} ended at step {step} with reward {total_reward}", flush=True)
     if episode % CONFIG['target_update'] == 0:
         torch.save(agent.model.state_dict(), f"./model/dqn_ep{episode}.pth")
+
+    if total_reward > best_reward:
+        best_reward = total_reward
+        torch.save(agent.model.state_dict(), f"./model/best_model.pth")
+        print(f"New best model saved with reward {total_reward}")
     #cv2.destroyAllWindows()
 
 env.close()

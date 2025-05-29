@@ -6,7 +6,7 @@ import os
 import glob
 import matplotlib.pyplot as plt
 
-def save_training_curves(episode_rewards, episode_steps, base_folder="training_result"):
+def save_training_curves(episode_rewards, episode_steps, losses, base_folder="training_result"):
     os.makedirs(base_folder, exist_ok=True)
 
     # 找出現有 trainN 資料夾編號
@@ -47,6 +47,15 @@ def save_training_curves(episode_rewards, episode_steps, base_folder="training_r
     plt.xlabel("Episode")
     plt.ylabel("Reward per Step")
     plt.savefig(os.path.join(train_folder, "average_reward_per_step.png"))
+    plt.close()
+
+    # 3. 存 looses.png
+    plt.plot(losses)
+    plt.xlabel('Training Step')
+    plt.ylabel('Loss')
+    plt.title('DQN Training Loss Curve')
+    plt.grid(True)
+    plt.savefig('loss_curve.png')
     plt.close()
 
     print(f"Saved training curves in folder: {train_folder}")

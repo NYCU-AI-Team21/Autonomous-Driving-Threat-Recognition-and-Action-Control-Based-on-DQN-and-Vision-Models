@@ -7,6 +7,7 @@ import carla
 import cv2
 import random
 
+from config import CONFIG
 from Control import CarlaControl
 from YOLO import YOLODetector
 from CarlaEnv import CarlaEnv
@@ -27,7 +28,7 @@ def main():
     env = CarlaEnv()
     cam_manager = CamManager()
     detector = YOLODetector()
-    agent = DQNAgent(state_size, action_size)
+    agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'])
     agent.load("./model/dqn_ep490.pth") # modify this for other paths
     
     try:
