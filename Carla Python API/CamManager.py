@@ -19,7 +19,9 @@ class CamManager:
         if SHOW_IMG:
             with frame_store.frame_lock:
                 frame_store.latest_encoded_frame = cv2.imencode('.jpg', img)[1].tobytes()
-
+            cv2.imshow("CARLA Camera", img)
+            cv2.waitKey(1)
+        
         resized_img = cv2.resize(img, (84, 84))
         self.latest_frame = resized_img
         return resized_img
