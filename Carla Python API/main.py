@@ -14,27 +14,30 @@ from CarlaEnv import CarlaEnv
 from CamManager import CamManager
 from DQN import DQNAgent
 
+state_size = 5
+action_size = 7
+
+ACTIONS = [
+    (0.25, 0.0, 0.0, False),  # 直行加速
+    (0.0, 0.0, 0.2, False),  # 直行減速
+    (0.0, -0.6, 0.03, False),  # 左轉大
+    (0.0, -0.4, 0.05, False),  # 左轉小
+    (0.0, 0.6, 0.03, False),  # 右轉大
+    (0.0, 0.4, 0.05, False),  # 右轉小
+    (0.1, 0.0, 0.0, True),   # 倒車
+]
 
 def main():
-    ACTIONS = [
-        [0.5, 0.0, 0.0],   # go straight
-        [0.5, -0.3, 0.0],  # turn left
-        [0.5, 0.3, 0.0],   # turn right
-        [0.0, 0.0, 1.0]    # brake
-    ]
-    state_size = 4
-    action_size = 4
-    
     env = CarlaEnv()
     cam_manager = CamManager()
     detector = YOLODetector()
     agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'], CONFIG['target_update_freq'])
-    agent.load("./model/dqn_ep490.pth") # modify this for other paths
+    agent.load("./model/dqn_ep2350.pth") # modify this for other paths
     
     try:
         env.spawn_vehicle()
         env.attach_camera(cam_manager.process_img)
-        state = [0.0, 0, 0, 0, 100.0]
+        state = cam_manager.latest_frame
         print("\nPress Crtl + C to stop.\n")
         try:
             while True:

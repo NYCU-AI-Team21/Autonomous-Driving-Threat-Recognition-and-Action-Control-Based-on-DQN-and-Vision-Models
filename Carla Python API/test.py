@@ -22,6 +22,8 @@ class CarlaEnv:
         self.control = None  # 新增的
         self.collision_sensor = None # 新增的
         self.collision_happened = False  # 碰撞旗標  新增的
+        available = self.client.get_available_maps()
+        print("Available maps:\n", available)
         for bp in self.blueprint_library.filter('vehicle.*'):
             print(bp.id)
 

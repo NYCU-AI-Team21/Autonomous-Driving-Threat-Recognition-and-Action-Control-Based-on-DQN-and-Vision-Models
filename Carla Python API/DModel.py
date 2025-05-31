@@ -1,26 +1,11 @@
 import torch.nn as nn
+import torch
 
-class DQN(nn.Module):
-    def __init__(self, state_size, action_size):
-        super(DQN, self).__init__()
-        self.layers = nn.Sequential(
-            nn.Linear(state_size, 64),
-            nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, action_size)
-        )
-
-    def forward(self, x):
-        return self.layers(x)
-    
-'''
-無yolo版
 class DQN(nn.Module):
     def __init__(self, action_size):
         super(DQN, self).__init__()
         self.conv_layers = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=8, stride=4),  
+            nn.Conv2d(3, 32, kernel_size=8, stride=4),
             nn.ReLU(),
             nn.Conv2d(32, 64, kernel_size=4, stride=2), 
             nn.ReLU(),
@@ -43,4 +28,3 @@ class DQN(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc_layers(x)
         return x
-'''

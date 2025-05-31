@@ -6,18 +6,21 @@ import sys
 import carla
 import cv2
 import random
+from camera_share import frame_store
 
 class CamManager:
     def __init__(self):
         self.latest_frame = None
 
-    def process_img(self, image, SHOW_IMG=False):
+    def process_img(self, image, SHOW_IMG=True):
         img = np.frombuffer(image.raw_data, dtype=np.uint8)
-        img = img.reshape((480, 640, 4))  # 注意這裡
-        img = img[:, :, :3]  # RGB only
+        img = img.reshape((image.height, image.width, 4))[:, :, :3]
+
         if SHOW_IMG:
-            img_BGR = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-            cv2.imshow("Carla Camera", img_BGR)
-            cv2.waitKey(1)
-        self.latest_frame = img
-        return img
+            with frame_store.frame_lock:
+                frame_store.latest_encoded_frame = cv2.imencode('.jpg', img)[1].tobytes()
+
+        resized_img = cv2.resize(img, (84, 84))
+        self.latest_frame = resized_img
+        return resized_img
+        

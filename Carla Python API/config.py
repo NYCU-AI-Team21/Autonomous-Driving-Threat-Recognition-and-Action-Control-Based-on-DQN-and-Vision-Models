@@ -7,7 +7,7 @@ CONFIG = {
     'img_height': 480,
     'fov': 110,
 
-    'max_episode': 500,
+    'max_episode': 10000,
     'max_steps': 500,
 
     'gamma': 0.99,
@@ -26,8 +26,8 @@ CONFIG = {
     'reward_forward': 1,
     'reward_brake': -0.5,
 
-    'max_speed': 60,       # km/h
-    'min_speed': 30,        # km/h
-    'safe_distance': 10.0, # meters
-    'dest_arrival_threshold':5 # meters
+    'max_speed': 25,       # km/h
+    'min_speed': 5,        # km/h
+    'safe_distance': 15.0, # meters
+    'dest_arrival_threshold':2 # meters
 }
