@@ -30,7 +30,7 @@ ACTIONS = [
 def main():
     env = CarlaEnv()
     cam_manager = CamManager()
-    detector = YOLODetector()
+    # detector = YOLODetector()
     agent = DQNAgent(state_size, action_size, CONFIG['epsilon'], CONFIG['epsilon_min'], CONFIG['epsilon_decay'], CONFIG['target_update_freq'])
     agent.load("./model/dqn_ep2350.pth") # modify this for other paths
     
@@ -43,12 +43,12 @@ def main():
             while True:
                 if cam_manager.latest_frame is None:
                     continue
-                frame = cam_manager.latest_frame
-                detections = detector.detect(frame)
+                # frame = cam_manager.latest_frame
+                # detections = detector.detect(frame)
                 action_index = agent.choose_action(state)
                 action = ACTIONS[action_index]
 
-                next_state, reward, done, _ = env.step(action, detections)
+                next_state, reward, done, _ = env.step(action, None)
                 state = next_state
         except KeyboardInterrupt:
             print("\nExiting\n")
