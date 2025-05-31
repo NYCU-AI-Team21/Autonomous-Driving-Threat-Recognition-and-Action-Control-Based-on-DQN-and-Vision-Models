@@ -17,6 +17,17 @@ from Control import CarlaControl
 from YOLO import YOLODetector
 from CamManager import CamManager
 
+import logging
+import threading
+from camera_server import app
+
+# 關閉 werkzeug HTTP 請求日誌
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+# 啟動 Flask server thread，不輸出一般請求日誌
+threading.Thread(target=lambda: app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False), daemon=True).start()
+
 state_size = 5
 action_size = 5
 
