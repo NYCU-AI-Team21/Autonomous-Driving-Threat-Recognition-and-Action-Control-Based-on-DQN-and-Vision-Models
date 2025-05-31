@@ -7,15 +7,12 @@ import pathlib
 # 自動加入 yolov5-master 路徑
 yolov5_repo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'yolov5-master'))
 sys.path.append(yolov5_repo_path)
-
-# ✅ Monkey patch to support Windows-trained models on Linux
 pathlib.WindowsPath = pathlib.PosixPath
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class YOLODetector:
     def __init__(self, model_path='../YOLO_model/best.pt'):
-        # 使用 torch.hub 載入本地 yolov5
         self.model = torch.hub.load(yolov5_repo_path, 'custom', path=model_path, source='local')
         self.model.to(device).eval()
 

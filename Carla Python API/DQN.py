@@ -83,8 +83,9 @@ class DQNAgent:
         return loss.item()
 
     def load(self, path):
-        self.model.load_state_dict(torch.load(path, map_location=device))
+        self.model.load_state_dict(torch.load(path))
         self.model.eval()
+        return self
 
     def update_target_network(self):
         self.target_model.load_state_dict(self.model.state_dict())
