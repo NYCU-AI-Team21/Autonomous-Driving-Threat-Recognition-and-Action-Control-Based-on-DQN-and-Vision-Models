@@ -48,7 +48,8 @@ def main():
                 action_index = agent.choose_action(state)
                 action = ACTIONS[action_index]
 
-                next_state, reward, done, _ = env.step(action, None)
+                no_use, reward, done, _ = env.step(action, None)
+                next_state = cam_manager.latest_frame
                 state = next_state
         except KeyboardInterrupt:
             print("\nExiting\n")
