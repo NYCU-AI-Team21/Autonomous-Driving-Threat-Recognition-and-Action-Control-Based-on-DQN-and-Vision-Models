@@ -31,27 +31,3 @@ We implemented and compared three models:
 | Correct Cornering Rate | 22%            | 30%                              | 51%                              |
 |  Lane Alignment        | 35%            | 41%                              | 74%                              |
 |  Red Light Violations  | 45%            | 40%                              | 31%                              |
-
-## Project Structure
-
-project/
-├── Carla Python API/ # main codes for training and evaluation
-│ ├── CamManger.py
-│ ├── CarlaEnv.py
-│ ├── Control.py
-│ ├── DModel.py
-│ ├── DQN.py
-│ ├── YOLO.py
-│ ├── camera_server.py
-│ ├── camer_share.py
-│ ├── config.py
-│ ├── display.py
-│ ├── main.py
-│ ├── manual_control.py
-│ ├── plot.py
-│ ├── train.py
-├── YOLO_model/
-│ ├── best.pt
-├── backup/Carla Python API/ # Backup of earlier YOLO-only version
-├── README.md # This file
-├── requirements.txt # Python dependencies
